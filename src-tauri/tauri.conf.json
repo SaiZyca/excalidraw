@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Excalidraw",
+  "version": "1.0.0",
+  "identifier": "com.excalidraw.desktop",
+  "build": {
+    "beforeDevCommand": "npm --prefix excalidraw-app run dev",
+    "devUrl": "http://localhost:3000",
+    "frontendDist": "../excalidraw-app/build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Excalidraw",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "center": true,
+        "fullscreen": false,
+        "dragDropEnabled": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "category": "GraphicsAndDesign",
+    "shortDescription": "Official Excalidraw desktop whiteboard",
+    "longDescription": "Official Excalidraw desktop application with offline support and lossless image rendering.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ]
+  }
+}
