@@ -9,6 +9,7 @@
     "frontendDist": "../excalidraw-app/build"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "Excalidraw",
@@ -19,7 +20,7 @@
         "resizable": true,
         "center": true,
         "fullscreen": false,
-        "dragDropEnabled": true
+        "dragDropEnabled": false
       }
     ],
     "security": {

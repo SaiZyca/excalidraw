@@ -102,6 +102,8 @@ import Collab, {
 import { AppFooter } from "./components/AppFooter";
 import { AppMainMenu } from "./components/AppMainMenu";
 import { AppWelcomeScreen } from "./components/AppWelcomeScreen";
+import { ImageImportSettingsDialog } from "./components/ImageImportSettingsDialog";
+import { BatchExportImagesDialog } from "./components/BatchExportImagesDialog";
 import {
   ExportToExcalidrawPlus,
   exportToExcalidrawPlus,
@@ -376,6 +378,8 @@ const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [isImageSettingsOpen, setIsImageSettingsOpen] = useState(false);
+  const [isBatchExportOpen, setIsBatchExportOpen] = useState(false);
   const isCollabDisabled = isRunningInIframe();
 
   const { editorTheme, appTheme, setAppTheme } = useHandleAppTheme();
@@ -1033,6 +1037,17 @@ const ExcalidrawWrapper = () => {
           isCollabEnabled={!isCollabDisabled}
           theme={appTheme}
           refresh={() => forceRefresh((prev) => !prev)}
+          onImageSettingsDialogOpen={() => setIsImageSettingsOpen(true)}
+          onBatchExportImagesDialogOpen={() => setIsBatchExportOpen(true)}
+        />
+        <ImageImportSettingsDialog
+          isOpen={isImageSettingsOpen}
+          onClose={() => setIsImageSettingsOpen(false)}
+        />
+        <BatchExportImagesDialog
+          isOpen={isBatchExportOpen}
+          onClose={() => setIsBatchExportOpen(false)}
+          excalidrawAPI={excalidrawAPI}
         />
         <AppWelcomeScreen
           onCollabDialogOpen={onCollabDialogOpen}

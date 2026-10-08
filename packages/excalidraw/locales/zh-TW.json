@@ -530,11 +530,13 @@
     "title": {
       "exportToPng": "輸出成 PNG",
       "exportToSvg": "輸出成 SVG",
+      "exportToWebp": "輸出成 WebP",
       "copyPngToClipboard": "複製 PNG 至剪貼簿"
     },
     "button": {
       "exportToPng": "PNG",
       "exportToSvg": "SVG",
+      "exportToWebp": "WebP",
       "copyPngToClipboard": "複製至剪貼簿"
     }
   },

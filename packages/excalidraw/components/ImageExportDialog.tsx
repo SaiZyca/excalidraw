@@ -325,6 +325,18 @@ const ImageExportModal = ({
           >
             {t("imageExportDialog.button.exportToSvg")}
           </FilledButton>
+          <FilledButton
+            className="ImageExportModal__settings__buttons__button"
+            label={t("imageExportDialog.title.exportToWebp")}
+            onClick={() =>
+              onExportImage(EXPORT_IMAGE_TYPES.webp, exportedElements, {
+                exportingFrame,
+              })
+            }
+            icon={downloadIcon}
+          >
+            {t("imageExportDialog.button.exportToWebp")}
+          </FilledButton>
           {(probablySupportsClipboardBlob || isFirefox) && (
             <FilledButton
               className="ImageExportModal__settings__buttons__button"

@@ -2,6 +2,8 @@ import {
   loginIcon,
   ExcalLogo,
   eyeIcon,
+  downloadIcon,
+  settingsIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { MainMenu } from "@excalidraw/excalidraw/index";
@@ -22,6 +24,8 @@ export const AppMainMenu: React.FC<{
   isCollabEnabled: boolean;
   theme: Theme | "system";
   refresh: () => void;
+  onImageSettingsDialogOpen: () => void;
+  onBatchExportImagesDialogOpen: () => void;
 }> = React.memo((props) => {
   const { t } = useI18n();
   return (
@@ -30,6 +34,18 @@ export const AppMainMenu: React.FC<{
       <MainMenu.DefaultItems.SaveToActiveFile />
       <MainMenu.DefaultItems.Export />
       <MainMenu.DefaultItems.SaveAsImage />
+      <MainMenu.Item
+        icon={downloadIcon}
+        onSelect={() => props.onBatchExportImagesDialogOpen()}
+      >
+        📦 打包匯出所有圖片 (Batch Export)
+      </MainMenu.Item>
+      <MainMenu.Item
+        icon={settingsIcon}
+        onSelect={() => props.onImageSettingsDialogOpen()}
+      >
+        🖼️ 圖片匯入設定 (Image Settings)
+      </MainMenu.Item>
       {props.isCollabEnabled && (
         <MainMenu.DefaultItems.LiveCollaborationTrigger
           isCollaborating={props.isCollaborating}

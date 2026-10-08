@@ -97,6 +97,8 @@ export const getMimeType = (blob: Blob | string): string => {
     return MIME_TYPES.jpg;
   } else if (/\.svg$/.test(name)) {
     return MIME_TYPES.svg;
+  } else if (/\.webp$/.test(name)) {
+    return MIME_TYPES.webp;
   } else if (/\.excalidrawlib$/.test(name)) {
     return MIME_TYPES.excalidrawlib;
   }
@@ -108,20 +110,20 @@ export const getFileHandleType = (handle: FileSystemFileHandle | null) => {
     return null;
   }
 
-  return handle.name.match(/\.(json|excalidraw|png|svg)$/)?.[1] || null;
+  return handle.name.match(/\.(json|excalidraw|png|svg|webp)$/)?.[1] || null;
 };
 
 export const isImageFileHandleType = (
   type: string | null,
-): type is "png" | "svg" => {
-  return type === "png" || type === "svg";
+): type is "png" | "svg" | "webp" => {
+  return type === "png" || type === "svg" || type === "webp";
 };
 
 export const isImageFileHandle = (
   handle: FileSystemFileHandle | null,
 ): handle is FileSystemFileHandle => {
   const type = getFileHandleType(handle);
-  return type === "png" || type === "svg";
+  return type === "png" || type === "svg" || type === "webp";
 };
 
 export const isSupportedImageFileType = (type: string | null | undefined) => {
@@ -236,6 +238,8 @@ export const loadLibraryFromBlob = async (
 
 export const canvasToBlob = async (
   canvas: HTMLCanvasElement | Promise<HTMLCanvasElement>,
+  type?: string,
+  quality?: number,
 ): Promise<Blob> => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -249,7 +253,7 @@ export const canvasToBlob = async (
           );
         }
         resolve(blob);
-      });
+      }, type, quality);
     } catch (error: any) {
       reject(error);
     }
@@ -354,15 +358,21 @@ const getImageFileDimensions = async (file: File) => {
   });
 };
 
+export type ImageOutputMimeType =
+  | typeof MIME_TYPES["jpg"]
+  | typeof MIME_TYPES["png"]
+  | typeof MIME_TYPES["webp"];
+
 export const resizeImageFile = async (
   file: File,
   opts: {
     /** undefined indicates auto */
-    outputType?: typeof MIME_TYPES["jpg"];
+    outputType?: ImageOutputMimeType;
     maxWidthOrHeight: number;
+    quality?: number;
   },
 ): Promise<File> => {
-  // SVG files shouldn't a can't be resized
+  // SVG files shouldn't and can't be resized
   if (file.type === MIME_TYPES.svg) {
     return file;
   }
@@ -371,13 +381,48 @@ export const resizeImageFile = async (
     throw new Error("Error: unsupported file type", { cause: "UNSUPPORTED" });
   }
 
-  if (!opts.outputType || opts.outputType === file.type) {
-    const dimensions = await getImageFileDimensions(file);
+  const dimensions = await getImageFileDimensions(file);
+  const maxDim = Math.max(dimensions.width, dimensions.height);
+  const needsResize = maxDim > opts.maxWidthOrHeight;
+  const needsFormatConvert = !!(opts.outputType && opts.outputType !== file.type);
 
-    if (
-      Math.max(dimensions.width, dimensions.height) <= opts.maxWidthOrHeight
-    ) {
-      return file;
+  if (!needsResize && !needsFormatConvert) {
+    return file;
+  }
+
+  // If no downsampling needed, but format conversion is needed, use direct Canvas transcoding
+  if (!needsResize && needsFormatConvert) {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () =>
+          reject(new Error("Failed to load image for format conversion"));
+        img.src = objectUrl;
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = dimensions.width;
+      canvas.height = dimensions.height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        const quality =
+          opts.quality ?? (opts.outputType === MIME_TYPES.webp ? 1.0 : 0.8);
+        const blob = await canvasToBlob(canvas, opts.outputType, quality);
+        const newExt =
+          opts.outputType === MIME_TYPES.webp
+            ? ".webp"
+            : opts.outputType === MIME_TYPES.png
+            ? ".png"
+            : ".jpg";
+        const baseName = file.name.replace(/\.[^/.]+$/, "");
+        return new File([blob], `${baseName}${newExt}`, {
+          type: opts.outputType,
+        });
+      }
+    } finally {
+      URL.revokeObjectURL(objectUrl);
     }
   }
 
@@ -394,23 +439,36 @@ export const resizeImageFile = async (
     pica: pica({ features: ["js", "wasm"] }),
   });
 
-  if (opts.outputType) {
-    const { outputType } = opts;
-    reduce._create_blob = function (env) {
-      return this.pica.toBlob(env.out_canvas, outputType, 0.8).then((blob) => {
-        env.out_blob = blob;
-        return env;
-      });
-    };
+  const outputType = opts.outputType || (file.type as ImageOutputMimeType);
+  const quality =
+    opts.quality ?? (outputType === MIME_TYPES.webp ? 1.0 : 0.8);
+
+  reduce._create_blob = function (env) {
+    return this.pica.toBlob(env.out_canvas, outputType, quality).then((blob) => {
+      env.out_blob = blob;
+      return env;
+    });
+  };
+
+  const reducedBlob = await reduce.toBlob(file, {
+    max: opts.maxWidthOrHeight,
+    alpha: true,
+  });
+
+  let newName = file.name;
+  if (opts.outputType && opts.outputType !== file.type) {
+    const newExt =
+      opts.outputType === MIME_TYPES.webp
+        ? ".webp"
+        : opts.outputType === MIME_TYPES.png
+        ? ".png"
+        : ".jpg";
+    newName = file.name.replace(/\.[^/.]+$/, "") + newExt;
   }
 
-  return new File(
-    [await reduce.toBlob(file, { max: opts.maxWidthOrHeight, alpha: true })],
-    file.name,
-    {
-      type: opts.outputType || file.type,
-    },
-  );
+  return new File([reducedBlob], newName, {
+    type: outputType,
+  });
 };
 
 export const SVGStringToFile = (SVGString: string, filename: string = "") => {
@@ -475,7 +533,7 @@ const getActualMimeTypeFromImage = async (file: Blob | File) => {
   > | null = null;
 
   const leadingBytes = [
-    ...new Uint8Array(await blobToArrayBuffer(file.slice(0, 15))),
+    ...new Uint8Array(await blobToArrayBuffer(file.slice(0, 32))),
   ].join(" ");
 
   // uint8 leading bytes

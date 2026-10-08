@@ -191,6 +191,16 @@ export const exportCanvas = async (
       mimeTypes: [IMAGE_MIME_TYPES.png],
       fileHandle,
     });
+  } else if (type === "webp") {
+    const blob = canvasToBlob(tempCanvas, MIME_TYPES.webp, 1.0);
+
+    return fileSave(blob, {
+      description: "Export to WebP",
+      name,
+      extension: "webp",
+      mimeTypes: [IMAGE_MIME_TYPES.webp],
+      fileHandle,
+    });
   } else if (type === "clipboard") {
     try {
       const blob = canvasToBlob(tempCanvas);

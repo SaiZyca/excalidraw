@@ -48,6 +48,7 @@ import {
   YOUTUBE_STATES,
   POINTER_EVENTS,
   TOOL_TYPE,
+  DEFAULT_IMAGE_OPTIONS,
   DEFAULT_COLLISION_THRESHOLD,
   ARROW_TYPE,
   DEFAULT_REDUCED_GLOBAL_ALPHA,
@@ -350,6 +351,7 @@ import {
   resizeImageFile,
   SVGStringToFile,
 } from "../data/blob";
+import { getImageImportSettings } from "../data/imageSettings";
 
 import { fileOpen } from "../data/filesystem";
 import {
@@ -10955,12 +10957,44 @@ class App extends React.Component<AppProps, AppState> {
 
     const existingFileData = this.files[fileId];
     if (!existingFileData?.dataURL) {
-      const { maxWidthOrHeight, maxFileSizeBytes } = this.props.imageOptions;
+      const dynamicSettings = getImageImportSettings();
+      const hostCustomizedMaxDim =
+        this.props.imageOptions.maxWidthOrHeight !==
+        DEFAULT_IMAGE_OPTIONS.maxWidthOrHeight;
+      const hostCustomizedMaxSize =
+        this.props.imageOptions.maxFileSizeBytes !==
+        DEFAULT_IMAGE_OPTIONS.maxFileSizeBytes;
+
+      const maxWidthOrHeight = hostCustomizedMaxDim
+        ? this.props.imageOptions.maxWidthOrHeight
+        : dynamicSettings.maxResolution;
+
+      const maxFileSizeBytes = hostCustomizedMaxSize
+        ? this.props.imageOptions.maxFileSizeBytes
+        : dynamicSettings.maxFileSizeMB * 1024 * 1024;
+
+      const outputType =
+        dynamicSettings.targetFormat === "original"
+          ? undefined
+          : (dynamicSettings.targetFormat as any);
+      const quality = dynamicSettings.quality;
+
+      const resizeOpts: {
+        maxWidthOrHeight: number;
+        outputType?: ImageOutputMimeType;
+        quality?: number;
+      } = {
+        maxWidthOrHeight,
+      };
+      if (outputType) {
+        resizeOpts.outputType = outputType;
+      }
+      if (typeof quality === "number" && quality < 1) {
+        resizeOpts.quality = quality;
+      }
 
       try {
-        imageFile = await resizeImageFile(imageFile, {
-          maxWidthOrHeight,
-        });
+        imageFile = await resizeImageFile(imageFile, resizeOpts);
       } catch (error: any) {
         console.error(
           "Error trying to resizing image file on insertion",
@@ -10990,7 +11024,7 @@ class App extends React.Component<AppProps, AppState> {
 
           this.addMissingFiles([
             {
-              mimeType,
+              mimeType: imageFile.type as ValueOf<typeof IMAGE_MIME_TYPES>,
               id: fileId,
               dataURL,
               created: Date.now(),

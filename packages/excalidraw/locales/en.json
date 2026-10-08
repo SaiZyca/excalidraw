@@ -542,11 +542,13 @@
     "title": {
       "exportToPng": "Export to PNG",
       "exportToSvg": "Export to SVG",
+      "exportToWebp": "Export to WebP",
       "copyPngToClipboard": "Copy PNG to clipboard"
     },
     "button": {
       "exportToPng": "PNG",
       "exportToSvg": "SVG",
+      "exportToWebp": "WebP",
       "copyPngToClipboard": "Copy to clipboard"
     }
   },
