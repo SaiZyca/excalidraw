@@ -513,8 +513,10 @@ body.excalidraw-cursor-resize * {
 
   .App-menu__left {
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 0.75rem;
-    max-width: 12.5rem;
+    min-width: 13.5rem;
+    max-width: 16rem;
     box-sizing: border-box;
     position: absolute;
   }

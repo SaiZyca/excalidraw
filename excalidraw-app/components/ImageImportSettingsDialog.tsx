@@ -15,10 +15,6 @@ export const ImageImportSettingsDialog: React.FC<{
   isOpen: boolean;
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
-  if (!isOpen) {
-    return null;
-  }
-
   const [settings, setSettings] = useState<ImageImportSettings>(() =>
     getImageImportSettings(),
   );
@@ -34,6 +30,10 @@ export const ImageImportSettingsDialog: React.FC<{
       ? ""
       : String(settings.maxFileSizeMB),
   );
+
+  if (!isOpen) {
+    return null;
+  }
 
   const resChoice = [8192, 3840, 2560, 1440].includes(settings.maxResolution)
     ? settings.maxResolution

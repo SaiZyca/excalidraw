@@ -174,6 +174,8 @@ import {
   addElementsToFrame,
   replaceAllElementsInFrame,
   removeElementsFromFrame,
+  layoutFrameChildren,
+  getNonDeletedElements,
   getElementsInResizingFrame,
   getElementsInNewFrame,
   getContainingFrame,
@@ -245,6 +247,7 @@ import type {
   NonDeletedExcalidrawElement,
   ExcalidrawTextContainer,
   ExcalidrawFrameLikeElement,
+  ExcalidrawFrameElement,
   ExcalidrawMagicFrameElement,
   ExcalidrawIframeLikeElement,
   IframeData,
@@ -306,6 +309,33 @@ import {
   actionSelectAllElementsInFrame,
   actionWrapSelectionInFrame,
 } from "../actions/actionFrame";
+import {
+  actionSetFrameLayoutNone,
+  actionSetFrameLayoutHorizontal,
+  actionSetFrameLayoutVertical,
+  actionSetFrameLayoutMasonry,
+  actionSetFrameLayoutPackery,
+  actionWrapInAutoLayoutFrameHorizontal,
+  actionWrapInAutoLayoutFrameVertical,
+  actionWrapInAutoLayoutFrameMasonry,
+  actionWrapInAutoLayoutFramePackery,
+  actionConvertFrameToGroup,
+  actionConvertGroupToFrame,
+  actionSetFrameLayoutSortNatural,
+  actionSetFrameLayoutSortAreaDesc,
+  actionSetFrameLayoutSortAreaAsc,
+  actionSetFrameLayoutSortWidthDesc,
+  actionSetFrameLayoutSortHeightDesc,
+  actionSetFrameLayoutSortNameAsc,
+  actionCropImagesSquare,
+  actionResetImagesCrop,
+  actionResetImageAspectRatio,
+  actionResetImageOriginalResolution,
+  actionUnifyElementsWidth,
+  actionUnifyElementsHeight,
+  actionFreezeFrameLayoutOrder,
+} from "../actions/actionFrameLayout";
+import type { ContextMenuSubmenu } from "./ContextMenu";
 import { createRedoAction, createUndoAction } from "../actions/actionHistory";
 import { actionTextAutoResize } from "../actions/actionTextAutoResize";
 import { actionToggleViewMode } from "../actions/actionToggleViewMode";
@@ -320,6 +350,7 @@ import {
 } from "../clipboard";
 
 import { exportCanvas, loadFromBlob } from "../data";
+import type { ImageOutputMimeType } from "../data/blob";
 import Library, { distributeLibraryItemsOnSquareGrid } from "../data/library";
 import { restoreAppState, restoreElements } from "../data/restore";
 import { getCenter, getDistance } from "../gesture";
@@ -6316,6 +6347,28 @@ class App extends React.Component<AppProps, AppState> {
       return;
     }
 
+    if (
+      selectedElements.length === 1 &&
+      isFrameLikeElement(selectedElements[0])
+    ) {
+      const frame = selectedElements[0];
+      const children = getNonDeletedElements(
+        getFrameChildren(this.scene.getElementsIncludingDeleted(), frame.id),
+      ).filter((element) => !(element.type === "text" && element.containerId));
+
+      const newSelectedIds: Record<string, true> = {
+        [frame.id]: true,
+      };
+      for (const child of children) {
+        newSelectedIds[child.id] = true;
+      }
+
+      this.setState({
+        selectedElementIds: newSelectedIds,
+      });
+      return;
+    }
+
     this.cursor.reset();
 
     const selectedGroupIds = getSelectedGroupIds(this.state);
@@ -10616,6 +10669,80 @@ class App extends React.Component<AppProps, AppState> {
         this.scene.replaceAllElements(nextElements);
       }
 
+      // Auto-layout for frames affected by drag or resize
+      if (
+        pointerDownState.drag.hasOccurred ||
+        pointerDownState.resize.isResizing
+      ) {
+        const curSelectedElements = this.scene.getSelectedElements(this.state);
+        const affectedFrameIds = new Set<string>();
+
+        // Only layout if:
+        // 1. Resizing a Frame or elements inside a Frame
+        // 2. Dragging children belonging to a Frame (reordering or inserting)
+        // Never layout when merely clicking or translating (dragging) the Frame itself!
+        if (pointerDownState.resize.isResizing) {
+          for (const el of curSelectedElements) {
+            if (el.frameId) {
+              affectedFrameIds.add(el.frameId);
+            }
+            if (isFrameLikeElement(el)) {
+              affectedFrameIds.add(el.id);
+            }
+          }
+        } else if (pointerDownState.drag.hasOccurred) {
+          for (const el of curSelectedElements) {
+            if (el.frameId) {
+              affectedFrameIds.add(el.frameId);
+            }
+          }
+        }
+
+        if (affectedFrameIds.size > 0) {
+          const curElementsMap = this.scene.getNonDeletedElementsMap();
+          for (const frameId of affectedFrameIds) {
+            const frame = curElementsMap.get(frameId) as
+              | ExcalidrawFrameElement
+              | undefined;
+            if (
+              frame &&
+              isFrameLikeElement(frame) &&
+              frame.layoutMode &&
+              frame.layoutMode !== "none"
+            ) {
+              const children = getNonDeletedElements(
+                getFrameChildren(
+                  this.scene.getElementsIncludingDeleted(),
+                  frame.id,
+                ),
+              );
+
+              // If the user selected the Frame AND its children to resize them together,
+              // respect the user's manual proportional scaling and do not override/re-layout!
+              if (pointerDownState.resize.isResizing) {
+                const isFrameSelected = curSelectedElements.some(
+                  (el) => el.id === frame.id,
+                );
+                const areChildrenAlsoSelected = children.some((child) =>
+                  curSelectedElements.some((el) => el.id === child.id),
+                );
+                if (isFrameSelected && areChildrenAlsoSelected) {
+                  continue;
+                }
+              }
+
+              layoutFrameChildren(
+                frame,
+                children,
+                curElementsMap,
+                this.state,
+                this.scene,
+              );
+            }
+          }
+        }
+      }
+
       // Code below handles selection when element(s) weren't
       // drag or added to selection on pointer down phase.
       const hitElement = pointerDownState.hit.element;
@@ -11855,6 +11982,61 @@ class App extends React.Component<AppProps, AppState> {
           ]
         : [];
 
+    const frameLayoutSubmenu: ContextMenuSubmenu = {
+      type: "submenu",
+      name: "frameLayoutSubmenu",
+      label: "labels.frameLayout",
+      predicate: (elements, appState, _, app) => {
+        const selected = app.scene.getSelectedElements(appState);
+        return selected.length === 1 && isFrameLikeElement(selected[0]);
+      },
+      items: [
+        actionSetFrameLayoutNone,
+        actionSetFrameLayoutHorizontal,
+        actionSetFrameLayoutVertical,
+        actionSetFrameLayoutMasonry,
+        actionSetFrameLayoutPackery,
+      ],
+    };
+
+    const wrapInAutoLayoutFrameSubmenu: ContextMenuSubmenu = {
+      type: "submenu",
+      name: "wrapInAutoLayoutFrameSubmenu",
+      label: "labels.wrapInAutoLayoutFrame",
+      predicate: (elements, appState, _, app) => {
+        const selected = getSelectedElements(elements, appState);
+        return (
+          selected.length > 0 &&
+          !selected.some((el) => isFrameLikeElement(el))
+        );
+      },
+      items: [
+        actionWrapInAutoLayoutFrameHorizontal,
+        actionWrapInAutoLayoutFrameVertical,
+        actionWrapInAutoLayoutFrameMasonry,
+        actionWrapInAutoLayoutFramePackery,
+      ],
+    };
+
+    const frameLayoutSortSubmenu: ContextMenuSubmenu = {
+      type: "submenu",
+      name: "frameLayoutSortSubmenu",
+      label: "labels.frameLayoutSortOrder",
+      predicate: (elements, appState, _, app) => {
+        const selected = app.scene.getSelectedElements(appState);
+        return selected.length === 1 && isFrameLikeElement(selected[0]);
+      },
+      items: [
+        actionSetFrameLayoutSortNatural,
+        actionSetFrameLayoutSortAreaDesc,
+        actionSetFrameLayoutSortAreaAsc,
+        actionSetFrameLayoutSortWidthDesc,
+        actionSetFrameLayoutSortHeightDesc,
+        actionSetFrameLayoutSortNameAsc,
+        actionFreezeFrameLayoutOrder,
+      ],
+    };
+
     return [
       CONTEXT_MENU_SEPARATOR,
       actionCut,
@@ -11863,7 +12045,19 @@ class App extends React.Component<AppProps, AppState> {
       CONTEXT_MENU_SEPARATOR,
       actionSelectAllElementsInFrame,
       actionRemoveAllElementsFromFrame,
+      frameLayoutSubmenu,
+      frameLayoutSortSubmenu,
+      actionConvertFrameToGroup,
       actionWrapSelectionInFrame,
+      wrapInAutoLayoutFrameSubmenu,
+      actionConvertGroupToFrame,
+      CONTEXT_MENU_SEPARATOR,
+      actionCropImagesSquare,
+      actionUnifyElementsWidth,
+      actionUnifyElementsHeight,
+      actionResetImagesCrop,
+      actionResetImageAspectRatio,
+      actionResetImageOriginalResolution,
       CONTEXT_MENU_SEPARATOR,
       actionToggleCropEditor,
       CONTEXT_MENU_SEPARATOR,

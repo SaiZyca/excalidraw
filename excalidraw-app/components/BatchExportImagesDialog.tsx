@@ -14,16 +14,16 @@ export const BatchExportImagesDialog: React.FC<{
   onClose: () => void;
   excalidrawAPI: ExcalidrawImperativeAPI | null;
 }> = ({ isOpen, onClose, excalidrawAPI }) => {
-  if (!isOpen) {
-    return null;
-  }
-
   const [format, setFormat] = useState<ExportFormatChoice>("original");
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{
     text: string;
     type: "success" | "error";
   } | null>(null);
+
+  if (!isOpen) {
+    return null;
+  }
 
   const elements = excalidrawAPI?.getSceneElements() || [];
   const files = excalidrawAPI?.getFiles() || {};

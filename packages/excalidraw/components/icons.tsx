@@ -2591,3 +2591,78 @@ export const settingsIcon = createIcon(
   </g>,
   tablerIconProps,
 );
+
+// Auto-layout Frame Icons (matching user specification)
+export const FrameLayoutOffIcon = createIcon(
+  <g stroke="currentColor" strokeWidth="1.25">
+    <rect x="2.5" y="2.5" width="15" height="15" rx="2" strokeDasharray="2 2" fill="none" />
+    <line x1="4.5" y1="4.5" x2="15.5" y2="15.5" strokeLinecap="round" />
+  </g>,
+  modifiedTablerIconProps,
+);
+
+export const FrameLayoutRowIcon = createIcon(
+  <g stroke="currentColor" strokeWidth="1.2">
+    <rect x="2" y="2" width="16" height="16" rx="2" fill="none" />
+    {/* Row 1: 3 blocks */}
+    <rect x="3.5" y="3.5" width="3.2" height="4.0" rx="0.5" fill="currentColor" />
+    <rect x="7.8" y="3.5" width="3.2" height="4.0" rx="0.5" fill="currentColor" />
+    <rect x="12.1" y="3.5" width="3.2" height="4.0" rx="0.5" fill="currentColor" />
+    {/* Row 2: 2 blocks */}
+    <rect x="3.5" y="8.6" width="3.2" height="4.0" rx="0.5" fill="currentColor" />
+    <rect x="7.8" y="8.6" width="3.2" height="4.0" rx="0.5" fill="currentColor" />
+  </g>,
+  modifiedTablerIconProps,
+);
+
+export const FrameLayoutColIcon = createIcon(
+  <g stroke="currentColor" strokeWidth="1.2">
+    <rect x="2" y="2" width="16" height="16" rx="2" fill="none" />
+    {/* Col 1: 3 blocks */}
+    <rect x="3.5" y="3.5" width="3.2" height="3.6" rx="0.5" fill="currentColor" />
+    <rect x="3.5" y="8.0" width="3.2" height="3.6" rx="0.5" fill="currentColor" />
+    <rect x="3.5" y="12.5" width="3.2" height="3.6" rx="0.5" fill="currentColor" />
+    {/* Col 2: 2 blocks */}
+    <rect x="7.8" y="3.5" width="3.2" height="3.6" rx="0.5" fill="currentColor" />
+    <rect x="7.8" y="8.0" width="3.2" height="3.6" rx="0.5" fill="currentColor" />
+  </g>,
+  modifiedTablerIconProps,
+);
+
+export const FrameLayoutMasonryIcon = createIcon(
+  <g stroke="currentColor" strokeWidth="1.2">
+    <rect x="2" y="2" width="16" height="16" rx="2" fill="none" />
+    {/* Col 1 */}
+    <rect x="3.5" y="3.5" width="3.4" height="3.0" rx="0.5" fill="currentColor" />
+    <rect x="3.5" y="7.4" width="3.4" height="5.2" rx="0.5" fill="currentColor" />
+    <rect x="3.5" y="13.5" width="3.4" height="2.4" rx="0.5" fill="currentColor" />
+    {/* Col 2 */}
+    <rect x="8.0" y="3.5" width="3.4" height="5.8" rx="0.5" fill="currentColor" />
+    <rect x="8.0" y="10.2" width="3.4" height="5.7" rx="0.5" fill="currentColor" />
+    {/* Col 3 */}
+    <rect x="12.5" y="3.5" width="3.4" height="1.8" rx="0.5" fill="currentColor" />
+    <rect x="12.5" y="6.2" width="3.4" height="6.8" rx="0.5" fill="currentColor" />
+    <rect x="12.5" y="13.9" width="3.4" height="2.0" rx="0.5" fill="currentColor" />
+  </g>,
+  modifiedTablerIconProps,
+);
+
+export const FrameLayoutPackeryIcon = createIcon(
+  <g stroke="currentColor" strokeWidth="1.2">
+    <rect x="2" y="2" width="16" height="16" rx="2" fill="none" />
+    {/* Top left */}
+    <rect x="3.5" y="3.5" width="2.4" height="4.2" rx="0.5" fill="currentColor" />
+    {/* Top middle */}
+    <rect x="6.9" y="3.5" width="5.3" height="3.8" rx="0.5" fill="currentColor" />
+    {/* Right tall vertical */}
+    <rect x="13.2" y="3.5" width="2.5" height="9.8" rx="0.5" fill="currentColor" />
+    {/* Bottom left large square */}
+    <rect x="3.5" y="8.8" width="5.6" height="7.1" rx="0.5" fill="currentColor" />
+    {/* Center vertical */}
+    <rect x="10.1" y="8.4" width="2.1" height="4.6" rx="0.5" fill="currentColor" />
+    {/* Bottom right horizontal */}
+    <rect x="10.1" y="14.1" width="5.6" height="2.3" rx="0.5" fill="currentColor" />
+  </g>,
+  modifiedTablerIconProps,
+);
+

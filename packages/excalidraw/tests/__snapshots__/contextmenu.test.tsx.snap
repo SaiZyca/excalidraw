@@ -129,6 +129,64 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
         },
       },
       {
+        "items": [
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutNone",
+            "name": "setFrameLayoutNone",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutHorizontal",
+            "name": "setFrameLayoutHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutVertical",
+            "name": "setFrameLayoutVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutMasonry",
+            "name": "setFrameLayoutMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutPackery",
+            "name": "setFrameLayoutPackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.frameLayout",
+        "name": "frameLayoutSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
+      },
+      {
         "label": "labels.wrapSelectionInFrame",
         "name": "wrapSelectionInFrame",
         "perform": [Function],
@@ -136,6 +194,50 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
         "trackEvent": {
           "category": "element",
         },
+      },
+      {
+        "items": [
+          {
+            "label": "labels.frameLayoutHorizontal",
+            "name": "wrapInAutoLayoutFrameHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutVertical",
+            "name": "wrapInAutoLayoutFrameVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutMasonry",
+            "name": "wrapInAutoLayoutFrameMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutPackery",
+            "name": "wrapInAutoLayoutFramePackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.wrapInAutoLayoutFrame",
+        "name": "wrapInAutoLayoutFrameSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
       },
       "separator",
       {
@@ -4976,6 +5078,64 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
         },
       },
       {
+        "items": [
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutNone",
+            "name": "setFrameLayoutNone",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutHorizontal",
+            "name": "setFrameLayoutHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutVertical",
+            "name": "setFrameLayoutVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutMasonry",
+            "name": "setFrameLayoutMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutPackery",
+            "name": "setFrameLayoutPackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.frameLayout",
+        "name": "frameLayoutSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
+      },
+      {
         "label": "labels.wrapSelectionInFrame",
         "name": "wrapSelectionInFrame",
         "perform": [Function],
@@ -4983,6 +5143,50 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
         "trackEvent": {
           "category": "element",
         },
+      },
+      {
+        "items": [
+          {
+            "label": "labels.frameLayoutHorizontal",
+            "name": "wrapInAutoLayoutFrameHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutVertical",
+            "name": "wrapInAutoLayoutFrameVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutMasonry",
+            "name": "wrapInAutoLayoutFrameMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutPackery",
+            "name": "wrapInAutoLayoutFramePackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.wrapInAutoLayoutFrame",
+        "name": "wrapInAutoLayoutFrameSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
       },
       "separator",
       {
@@ -6210,6 +6414,64 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
         },
       },
       {
+        "items": [
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutNone",
+            "name": "setFrameLayoutNone",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutHorizontal",
+            "name": "setFrameLayoutHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutVertical",
+            "name": "setFrameLayoutVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutMasonry",
+            "name": "setFrameLayoutMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutPackery",
+            "name": "setFrameLayoutPackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.frameLayout",
+        "name": "frameLayoutSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
+      },
+      {
         "label": "labels.wrapSelectionInFrame",
         "name": "wrapSelectionInFrame",
         "perform": [Function],
@@ -6217,6 +6479,50 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
         "trackEvent": {
           "category": "element",
         },
+      },
+      {
+        "items": [
+          {
+            "label": "labels.frameLayoutHorizontal",
+            "name": "wrapInAutoLayoutFrameHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutVertical",
+            "name": "wrapInAutoLayoutFrameVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutMasonry",
+            "name": "wrapInAutoLayoutFrameMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutPackery",
+            "name": "wrapInAutoLayoutFramePackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.wrapInAutoLayoutFrame",
+        "name": "wrapInAutoLayoutFrameSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
       },
       "separator",
       {
@@ -8197,6 +8503,64 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
         },
       },
       {
+        "items": [
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutNone",
+            "name": "setFrameLayoutNone",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutHorizontal",
+            "name": "setFrameLayoutHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutVertical",
+            "name": "setFrameLayoutVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutMasonry",
+            "name": "setFrameLayoutMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutPackery",
+            "name": "setFrameLayoutPackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.frameLayout",
+        "name": "frameLayoutSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
+      },
+      {
         "label": "labels.wrapSelectionInFrame",
         "name": "wrapSelectionInFrame",
         "perform": [Function],
@@ -8204,6 +8568,50 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
         "trackEvent": {
           "category": "element",
         },
+      },
+      {
+        "items": [
+          {
+            "label": "labels.frameLayoutHorizontal",
+            "name": "wrapInAutoLayoutFrameHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutVertical",
+            "name": "wrapInAutoLayoutFrameVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutMasonry",
+            "name": "wrapInAutoLayoutFrameMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutPackery",
+            "name": "wrapInAutoLayoutFramePackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.wrapInAutoLayoutFrame",
+        "name": "wrapInAutoLayoutFrameSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
       },
       "separator",
       {
@@ -9201,6 +9609,64 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
         },
       },
       {
+        "items": [
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutNone",
+            "name": "setFrameLayoutNone",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutHorizontal",
+            "name": "setFrameLayoutHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutVertical",
+            "name": "setFrameLayoutVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutMasonry",
+            "name": "setFrameLayoutMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "checked": [Function],
+            "label": "labels.frameLayoutPackery",
+            "name": "setFrameLayoutPackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.frameLayout",
+        "name": "frameLayoutSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
+      },
+      {
         "label": "labels.wrapSelectionInFrame",
         "name": "wrapSelectionInFrame",
         "perform": [Function],
@@ -9208,6 +9674,50 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
         "trackEvent": {
           "category": "element",
         },
+      },
+      {
+        "items": [
+          {
+            "label": "labels.frameLayoutHorizontal",
+            "name": "wrapInAutoLayoutFrameHorizontal",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutVertical",
+            "name": "wrapInAutoLayoutFrameVertical",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutMasonry",
+            "name": "wrapInAutoLayoutFrameMasonry",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+          {
+            "label": "labels.frameLayoutPackery",
+            "name": "wrapInAutoLayoutFramePackery",
+            "perform": [Function],
+            "predicate": [Function],
+            "trackEvent": {
+              "category": "element",
+            },
+          },
+        ],
+        "label": "labels.wrapInAutoLayoutFrame",
+        "name": "wrapInAutoLayoutFrameSubmenu",
+        "predicate": [Function],
+        "type": "submenu",
       },
       "separator",
       {

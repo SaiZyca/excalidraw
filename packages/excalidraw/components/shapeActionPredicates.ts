@@ -180,11 +180,18 @@ export const getShapeActionPredicates = (
       !appState.croppingElementId &&
       singleSelected &&
       isImageElement(targetElements[0]),
+    imageProperties:
+      singleSelected &&
+      isImageElement(targetElements[0]),
     lineEditor:
       !appState.selectedLinearElement?.isEditing &&
       singleSelected &&
       isLinearElement(targetElements[0]) &&
       !isElbowArrow(targetElements[0]),
+    frameLayout:
+      singleSelected &&
+      (targetElements[0].type === "frame" ||
+        targetElements[0].type === "magicframe"),
   };
 };
 

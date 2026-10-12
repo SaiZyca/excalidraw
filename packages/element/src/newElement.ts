@@ -48,6 +48,10 @@ import type {
   FontFamilyValues,
   ExcalidrawTextContainer,
   ExcalidrawFrameElement,
+  FrameLayoutMode,
+  FrameLayoutAlignHorizontal,
+  FrameLayoutAlignVertical,
+  FrameLayoutSortOrder,
   ExcalidrawEmbeddableElement,
   ExcalidrawMagicFrameElement,
   ExcalidrawIframeElement,
@@ -263,6 +267,14 @@ export const newIframeElement = (
 export const newFrameElement = (
   opts: {
     name?: string;
+    layoutMode?: FrameLayoutMode;
+    layoutGap?: number;
+    layoutPadding?: number;
+    autoHeight?: boolean;
+    layoutAlignHorizontal?: FrameLayoutAlignHorizontal;
+    layoutAlignVertical?: FrameLayoutAlignVertical;
+    layoutSortOrder?: FrameLayoutSortOrder;
+    masonryFitWidth?: boolean;
   } & ElementConstructorOpts,
 ): NonDeleted<ExcalidrawFrameElement> => {
   const frameElement = newElementWith(
@@ -270,6 +282,19 @@ export const newFrameElement = (
       ..._newElementBase<ExcalidrawFrameElement>("frame", opts),
       type: "frame",
       name: opts?.name || null,
+      layoutMode: opts?.layoutMode || "none",
+      layoutGap: typeof opts?.layoutGap === "number" ? opts.layoutGap : 16,
+      layoutPadding:
+        typeof opts?.layoutPadding === "number" ? opts.layoutPadding : 16,
+      autoHeight:
+        typeof opts?.autoHeight === "boolean" ? opts.autoHeight : true,
+      layoutAlignHorizontal: opts?.layoutAlignHorizontal || "start",
+      layoutAlignVertical: opts?.layoutAlignVertical || "start",
+      layoutSortOrder: opts?.layoutSortOrder || "natural",
+      masonryFitWidth:
+        typeof opts?.masonryFitWidth === "boolean"
+          ? opts.masonryFitWidth
+          : true,
     },
     {},
   );

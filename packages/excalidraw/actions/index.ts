@@ -93,3 +93,38 @@ export { actionToggleLinearEditor } from "./actionLinearEditor";
 export { actionToggleSearchMenu } from "./actionToggleSearchMenu";
 
 export { actionToggleCropEditor } from "./actionCropEditor";
+
+export {
+  actionSetFrameLayoutNone,
+  actionSetFrameLayoutHorizontal,
+  actionSetFrameLayoutVertical,
+  actionSetFrameLayoutMasonry,
+  actionSetFrameLayoutPackery,
+  actionSetFrameLayoutAlignLeft,
+  actionSetFrameLayoutAlignHorizontallyCentered,
+  actionSetFrameLayoutAlignRight,
+  actionSetFrameLayoutAlignTop,
+  actionSetFrameLayoutAlignVerticallyCentered,
+  actionSetFrameLayoutAlignBottom,
+  actionConvertFrameToGroup,
+  actionConvertGroupToFrame,
+  actionWrapInAutoLayoutFrameHorizontal,
+  actionWrapInAutoLayoutFrameVertical,
+  actionWrapInAutoLayoutFrameMasonry,
+  actionWrapInAutoLayoutFramePackery,
+  actionSetFrameLayoutSortNatural,
+  actionSetFrameLayoutSortAreaDesc,
+  actionSetFrameLayoutSortAreaAsc,
+  actionSetFrameLayoutSortWidthDesc,
+  actionSetFrameLayoutSortHeightDesc,
+  actionSetFrameLayoutSortNameAsc,
+  actionCropImagesSquare,
+  actionResetImagesCrop,
+  actionResetImageAspectRatio,
+  actionResetImageOriginalResolution,
+  actionUnifyElementsWidth,
+  actionUnifyElementsHeight,
+  actionFreezeFrameLayoutOrder,
+  actionFitFrameToContent,
+} from "./actionFrameLayout";
+

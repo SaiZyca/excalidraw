@@ -175,9 +175,34 @@ export type InitializedExcalidrawImageElement = MarkNonNullable<
   "fileId"
 >;
 
+export type FrameLayoutMode =
+  | "none"
+  | "distributeHorizontal"
+  | "distributeVertical"
+  | "masonry"
+  | "packery";
+
+export type FrameLayoutAlignHorizontal = "start" | "center" | "end";
+export type FrameLayoutAlignVertical = "start" | "center" | "end";
+export type FrameLayoutSortOrder =
+  | "natural"
+  | "areaDesc"
+  | "areaAsc"
+  | "widthDesc"
+  | "heightDesc"
+  | "nameAsc";
+
 export type ExcalidrawFrameElement = _ExcalidrawElementBase & {
   type: "frame";
   name: string | null;
+  layoutMode?: FrameLayoutMode;
+  layoutGap?: number;
+  layoutPadding?: number;
+  autoHeight?: boolean;
+  layoutAlignHorizontal?: FrameLayoutAlignHorizontal;
+  layoutAlignVertical?: FrameLayoutAlignVertical;
+  layoutSortOrder?: FrameLayoutSortOrder;
+  masonryFitWidth?: boolean;
 };
 
 export type ExcalidrawMagicFrameElement = _ExcalidrawElementBase & {

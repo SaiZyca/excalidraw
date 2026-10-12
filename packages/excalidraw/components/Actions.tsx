@@ -1,18 +1,41 @@
 import clsx from "clsx";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Popover } from "radix-ui";
 
 import { CLASSES } from "@excalidraw/common";
 
-import { isArrowElement } from "@excalidraw/element";
+import {
+  isArrowElement,
+  isFrameLikeElement,
+  getFrameChildren,
+  getNonDeletedElements,
+  layoutFrameChildren,
+} from "@excalidraw/element";
 
 import type {
   ExcalidrawElement,
+  ExcalidrawFrameElement,
+  FrameLayoutMode,
+  FrameLayoutAlignHorizontal,
+  FrameLayoutAlignVertical,
+  FrameLayoutSortOrder,
   NonDeletedElementsMap,
   NonDeletedSceneElementsMap,
 } from "@excalidraw/element/types";
+import { RadioSelection } from "./RadioSelection";
 
-import { actionToggleZenMode } from "../actions";
+import {
+  actionToggleZenMode,
+  actionConvertFrameToGroup,
+  actionCropImagesSquare,
+  actionResetImagesCrop,
+  actionResetImageAspectRatio,
+  actionResetImageOriginalResolution,
+  actionUnifyElementsWidth,
+  actionUnifyElementsHeight,
+  actionFreezeFrameLayoutOrder,
+  actionFitFrameToContent,
+} from "../actions";
 
 import { t } from "../i18n";
 import { getTargetElements } from "../scene";
@@ -37,6 +60,18 @@ import {
   adjustmentsIcon,
   DotsHorizontalIcon,
   pencilIcon,
+  FrameLayoutOffIcon,
+  FrameLayoutRowIcon,
+  FrameLayoutColIcon,
+  FrameLayoutMasonryIcon,
+  FrameLayoutPackeryIcon,
+  AlignLeftIcon,
+  CenterHorizontallyIcon,
+  AlignRightIcon,
+  AlignTopIcon,
+  CenterVerticallyIcon,
+  AlignBottomIcon,
+  GroupIcon,
 } from "./icons";
 
 import { Island } from "./Island";
@@ -122,6 +157,444 @@ const AlignFieldset = ({
   );
 };
 
+const FrameLayoutFieldset = ({
+  appState,
+  app,
+}: {
+  appState: UIAppState;
+  app: AppClassProperties;
+}) => {
+  const [, setTick] = useState(0);
+  const selectedElements = app.scene.getSelectedElements(appState);
+  if (
+    selectedElements.length !== 1 ||
+    !isFrameLikeElement(selectedElements[0])
+  ) {
+    return null;
+  }
+  const frame = selectedElements[0] as ExcalidrawFrameElement;
+  const currentMode: FrameLayoutMode = frame.layoutMode ?? "none";
+  const currentGap = frame.layoutGap ?? 16;
+  const currentPadding = frame.layoutPadding ?? 16;
+  const currentAlignH: FrameLayoutAlignHorizontal =
+    frame.layoutAlignHorizontal ?? "start";
+  const currentAlignV: FrameLayoutAlignVertical =
+    frame.layoutAlignVertical ?? "start";
+  const currentSortOrder: FrameLayoutSortOrder =
+    frame.layoutSortOrder ??
+    (currentMode === "packery" ? "areaDesc" : "natural");
+
+  const applyLayout = (
+    overrides: Partial<{
+      layoutMode: FrameLayoutMode;
+      gap: number;
+      padding: number;
+      alignHorizontal: FrameLayoutAlignHorizontal;
+      alignVertical: FrameLayoutAlignVertical;
+      sortOrder: FrameLayoutSortOrder;
+    }>,
+  ) => {
+    const nextMode = overrides.layoutMode ?? frame.layoutMode ?? "none";
+    const nextGap = overrides.gap ?? frame.layoutGap ?? 16;
+    const nextPadding = overrides.padding ?? frame.layoutPadding ?? 16;
+    const nextAlignH =
+      overrides.alignHorizontal ?? frame.layoutAlignHorizontal ?? "start";
+    const nextAlignV =
+      overrides.alignVertical ?? frame.layoutAlignVertical ?? "start";
+    const nextSortOrder =
+      overrides.sortOrder ??
+      frame.layoutSortOrder ??
+      (nextMode === "packery" ? "areaDesc" : "natural");
+
+    app.scene.mutateElement(frame, {
+      layoutMode: nextMode,
+      layoutGap: nextGap,
+      layoutPadding: nextPadding,
+      layoutAlignHorizontal: nextAlignH,
+      layoutAlignVertical: nextAlignV,
+      layoutSortOrder: nextSortOrder,
+    });
+
+    if (nextMode !== "none") {
+      const children = getNonDeletedElements(
+        getFrameChildren(
+          app.scene.getElementsIncludingDeleted(),
+          frame.id,
+        ),
+      );
+      layoutFrameChildren(
+        frame,
+        children,
+        app.scene.getNonDeletedElementsMap(),
+        app.state,
+        app.scene,
+        {
+          layoutMode: nextMode,
+          gap: nextGap,
+          alignHorizontal: nextAlignH,
+          alignVertical: nextAlignV,
+          sortOrder: nextSortOrder,
+        },
+      );
+    }
+
+    app.scene.triggerUpdate();
+    setTick((t) => t + 1);
+  };
+
+  return (
+    <fieldset className="frame-layout-fieldset">
+      <legend>{t("labels.frameLayout")}</legend>
+      <div className="buttonList">
+        <RadioSelection
+          group="frame-layout-mode"
+          options={[
+            {
+              value: "none" as const,
+              text: t("labels.frameLayoutNone"),
+              icon: FrameLayoutOffIcon,
+              testId: "frame-layout-none",
+            },
+            {
+              value: "distributeHorizontal" as const,
+              text: t("labels.frameLayoutHorizontal"),
+              icon: FrameLayoutRowIcon,
+              testId: "frame-layout-row",
+            },
+            {
+              value: "distributeVertical" as const,
+              text: t("labels.frameLayoutVertical"),
+              icon: FrameLayoutColIcon,
+              testId: "frame-layout-col",
+            },
+            {
+              value: "masonry" as const,
+              text: t("labels.frameLayoutMasonry"),
+              icon: FrameLayoutMasonryIcon,
+              testId: "frame-layout-masonry",
+            },
+            {
+              value: "packery" as const,
+              text: t("labels.frameLayoutPackery"),
+              icon: FrameLayoutPackeryIcon,
+              testId: "frame-layout-packery",
+            },
+          ]}
+          value={currentMode}
+          onChange={(mode) => applyLayout({ layoutMode: mode })}
+        />
+      </div>
+
+      {currentMode !== "none" && (
+        <>
+          <div className="frame-layout-alignments">
+            <div className="frame-layout-align-row">
+              <span className="frame-layout-label">
+                {t("labels.frameLayoutAlignHorizontal")}
+              </span>
+              <RadioSelection
+                group="frame-layout-align-h"
+                options={[
+                  {
+                    value: "start" as const,
+                    text: t("labels.alignLeft"),
+                    icon: AlignLeftIcon,
+                    testId: "frame-layout-align-left",
+                  },
+                  {
+                    value: "center" as const,
+                    text: t("labels.centerHorizontally"),
+                    icon: CenterHorizontallyIcon,
+                    testId: "frame-layout-align-center-h",
+                  },
+                  {
+                    value: "end" as const,
+                    text: t("labels.alignRight"),
+                    icon: AlignRightIcon,
+                    testId: "frame-layout-align-right",
+                  },
+                ]}
+                value={currentAlignH}
+                onChange={(alignH) => applyLayout({ alignHorizontal: alignH })}
+              />
+            </div>
+            <div className="frame-layout-align-row">
+              <span className="frame-layout-label">
+                {t("labels.frameLayoutAlignVertical")}
+              </span>
+              <RadioSelection
+                group="frame-layout-align-v"
+                options={[
+                  {
+                    value: "start" as const,
+                    text: t("labels.alignTop"),
+                    icon: AlignTopIcon,
+                    testId: "frame-layout-align-top",
+                  },
+                  {
+                    value: "center" as const,
+                    text: t("labels.centerVertically"),
+                    icon: CenterVerticallyIcon,
+                    testId: "frame-layout-align-center-v",
+                  },
+                  {
+                    value: "end" as const,
+                    text: t("labels.alignBottom"),
+                    icon: AlignBottomIcon,
+                    testId: "frame-layout-align-bottom",
+                  },
+                ]}
+                value={currentAlignV}
+                onChange={(alignV) => applyLayout({ alignVertical: alignV })}
+              />
+            </div>
+            <div className="frame-layout-align-row">
+              <span className="frame-layout-label">
+                {t("labels.frameLayoutSortOrder")}
+              </span>
+              <select
+                className="frame-layout-sort-select"
+                value={currentSortOrder}
+                onChange={(e) =>
+                  applyLayout({
+                    sortOrder: e.target.value as FrameLayoutSortOrder,
+                  })
+                }
+              >
+                <option value="natural">
+                  {t("labels.frameLayoutSortNatural")}
+                </option>
+                <option value="areaDesc">
+                  {t("labels.frameLayoutSortAreaDesc")}
+                </option>
+                <option value="areaAsc">
+                  {t("labels.frameLayoutSortAreaAsc")}
+                </option>
+                <option value="widthDesc">
+                  {t("labels.frameLayoutSortWidthDesc")}
+                </option>
+                <option value="heightDesc">
+                  {t("labels.frameLayoutSortHeightDesc")}
+                </option>
+                <option value="nameAsc">
+                  {t("labels.frameLayoutSortNameAsc")}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div className="frame-layout-inputs">
+            <label>
+              <span>{t("labels.frameLayoutGap")}:</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={currentGap}
+                onChange={(e) =>
+                  applyLayout({
+                    gap: Math.max(0, parseInt(e.target.value) || 0),
+                  })
+                }
+              />
+            </label>
+            <label>
+              <span>{t("labels.frameLayoutPadding")}:</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={currentPadding}
+                onChange={(e) =>
+                  applyLayout({
+                    padding: Math.max(0, parseInt(e.target.value) || 0),
+                  })
+                }
+              />
+            </label>
+          </div>
+
+          <div className="frame-layout-tools-row">
+            <button
+              type="button"
+              className="frame-tool-btn"
+              title={t("labels.cropImagesSquare")}
+              onClick={() => {
+                const res = actionCropImagesSquare.perform(
+                  app.scene.getElementsIncludingDeleted(),
+                  appState as AppState,
+                  null,
+                  app,
+                );
+                if (res) {
+                  app.syncActionResult(res);
+                  setTick((t) => t + 1);
+                }
+              }}
+            >
+              1:1
+            </button>
+            <button
+              type="button"
+              className="frame-tool-btn"
+              title={t("labels.unifyElementsWidth")}
+              onClick={() => {
+                const res = actionUnifyElementsWidth.perform(
+                  app.scene.getElementsIncludingDeleted(),
+                  appState as AppState,
+                  null,
+                  app,
+                );
+                if (res) {
+                  app.syncActionResult(res);
+                  setTick((t) => t + 1);
+                }
+              }}
+            >
+              ↔
+            </button>
+            <button
+              type="button"
+              className="frame-tool-btn"
+              title={t("labels.unifyElementsHeight")}
+              onClick={() => {
+                const res = actionUnifyElementsHeight.perform(
+                  app.scene.getElementsIncludingDeleted(),
+                  appState as AppState,
+                  null,
+                  app,
+                );
+                if (res) {
+                  app.syncActionResult(res);
+                  setTick((t) => t + 1);
+                }
+              }}
+            >
+              ↕
+            </button>
+            <button
+              type="button"
+              className="frame-tool-btn"
+              title={t("labels.resetImagesCrop")}
+              onClick={() => {
+                const res = actionResetImagesCrop.perform(
+                  app.scene.getElementsIncludingDeleted(),
+                  appState as AppState,
+                  null,
+                  app,
+                );
+                if (res) {
+                  app.syncActionResult(res);
+                  setTick((t) => t + 1);
+                }
+              }}
+            >
+              ↺
+            </button>
+            <button
+              type="button"
+              className="frame-tool-btn"
+              title={t("labels.resetImageAspectRatio")}
+              onClick={() => {
+                const res = actionResetImageAspectRatio.perform(
+                  app.scene.getElementsIncludingDeleted(),
+                  appState as AppState,
+                  null,
+                  app,
+                );
+                if (res) {
+                  app.syncActionResult(res);
+                  setTick((t) => t + 1);
+                }
+              }}
+            >
+              ⚖
+            </button>
+            <button
+              type="button"
+              className="frame-tool-btn"
+              title={t("labels.resetImageOriginalResolution")}
+              onClick={() => {
+                const res = actionResetImageOriginalResolution.perform(
+                  app.scene.getElementsIncludingDeleted(),
+                  appState as AppState,
+                  null,
+                  app,
+                );
+                if (res) {
+                  app.syncActionResult(res);
+                  setTick((t) => t + 1);
+                }
+              }}
+            >
+              100%
+            </button>
+            <button
+              type="button"
+              className="frame-tool-btn"
+              title={t("labels.freezeFrameLayoutOrder")}
+              onClick={() => {
+                const res = actionFreezeFrameLayoutOrder.perform(
+                  app.scene.getElementsIncludingDeleted(),
+                  appState as AppState,
+                  null,
+                  app,
+                );
+                if (res) {
+                  app.syncActionResult(res);
+                  setTick((t) => t + 1);
+                }
+              }}
+            >
+              📌
+            </button>
+          </div>
+        </>
+      )}
+
+      <div className="frame-layout-actions">
+        <button
+          type="button"
+          className="frame-convert-button"
+          title={t("labels.fitFrameToContent")}
+          onClick={() => {
+            const res = actionFitFrameToContent.perform(
+              app.scene.getElementsIncludingDeleted(),
+              appState as AppState,
+              null,
+              app,
+            );
+            if (res) {
+              app.syncActionResult(res);
+            }
+          }}
+        >
+          <span>📐 {t("labels.fitFrameToContent")}</span>
+        </button>
+        <button
+          type="button"
+          className="frame-convert-button"
+          title={t("labels.convertFrameToGroup")}
+          onClick={() => {
+            const res = actionConvertFrameToGroup.perform(
+              app.scene.getElementsIncludingDeleted(),
+              appState as AppState,
+              null,
+              app,
+            );
+            if (res) {
+              app.syncActionResult(res);
+            }
+          }}
+        >
+          <GroupIcon theme={appState.theme} />
+          <span>{t("labels.convertFrameToGroup")}</span>
+        </button>
+      </div>
+    </fieldset>
+  );
+};
+
 /**
  * Full styles panel: the wide, always-expanded layout used on desktop when the
  * UI is in "full" mode.
@@ -198,6 +671,9 @@ export const SelectedShapeActions = ({
           showDistribute={predicates.distribute}
         />
       )}
+      {predicates.frameLayout && (
+        <FrameLayoutFieldset appState={appState} app={app} />
+      )}
       {predicates.showExtraActions && (
         <fieldset>
           <legend>{t("labels.actions")}</legend>
@@ -208,6 +684,67 @@ export const SelectedShapeActions = ({
             {renderAction("ungroup")}
             {predicates.link && renderAction("hyperlink")}
             {predicates.cropEditor && renderAction("cropEditor")}
+            {predicates.imageProperties && (
+              <>
+                <button
+                  type="button"
+                  className="frame-tool-btn"
+                  title={t("labels.resetImagesCrop")}
+                  style={{ width: "2rem", height: "2rem", padding: 0 }}
+                  onClick={() => {
+                    const res = actionResetImagesCrop.perform(
+                      app.scene.getElementsIncludingDeleted(),
+                      appState as AppState,
+                      null,
+                      app,
+                    );
+                    if (res) {
+                      app.syncActionResult(res);
+                    }
+                  }}
+                >
+                  ↺
+                </button>
+                <button
+                  type="button"
+                  className="frame-tool-btn"
+                  title={t("labels.resetImageAspectRatio")}
+                  style={{ width: "2rem", height: "2rem", padding: 0 }}
+                  onClick={() => {
+                    const res = actionResetImageAspectRatio.perform(
+                      app.scene.getElementsIncludingDeleted(),
+                      appState as AppState,
+                      null,
+                      app,
+                    );
+                    if (res) {
+                      app.syncActionResult(res);
+                    }
+                  }}
+                >
+                  ⚖
+                </button>
+                <button
+                  type="button"
+                  className="frame-tool-btn"
+                  title={t("labels.resetImageOriginalResolution")}
+                  style={{ width: "2rem", height: "2rem", padding: 0 }}
+                  onClick={() => {
+                    const res = actionResetImageOriginalResolution.perform(
+                      app.scene.getElementsIncludingDeleted(),
+                      appState as AppState,
+                      null,
+                      app,
+                    );
+                    if (res) {
+                      app.syncActionResult(res);
+                    }
+                  }}
+                >
+                  100%
+                </button>
+              </>
+            )}
             {predicates.lineEditor && renderAction("toggleLinearEditor")}
           </div>
         </fieldset>

@@ -65,6 +65,26 @@
     }
   }
 
+  .context-menu-item-container {
+    position: relative;
+  }
+
+  .context-menu-item--submenu {
+    .context-menu-item__arrow {
+      justify-self: end;
+      font-size: 0.65rem;
+      opacity: 0.7;
+    }
+  }
+
+  .context-submenu {
+    position: absolute;
+    top: -0.5rem;
+    left: 100%;
+    margin-left: 2px;
+    z-index: 10;
+  }
+
   .context-menu-item:hover {
     color: var(--popup-bg-color);
     background-color: var(--select-highlight-color);
