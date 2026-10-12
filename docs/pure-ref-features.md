@@ -2,6 +2,8 @@
 
 本分支（`pure-ref`）旨在為 Excalidraw 導入類似 **PureRef** 的靈感收集與畫布圖片管理工作流，針對大量參考素材（圖片、筆記、卡片等）提供自動化排版、尺寸比例控制與獨立離線桌面應用支援。
 
+![Pure-Ref 功能展示 (Masonry & Packery 排版與左側工具列)](./images/pure-ref-demo.png)
+
 ---
 
 ## 一、核心功能總覽
